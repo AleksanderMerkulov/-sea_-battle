@@ -1,10 +1,19 @@
 const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
+// const socketIo = require('socket.io');
 
 const app = express();
-const server = http.createServer(app);
-const io = socketIo(server);
+// const server = http.createServer(app);
+// const io = socketIo(server);
+
+const http = require('http').Server(app)
+const cors = require('cors')
+const io = require('socket.io')(http, {
+    cors: {
+        origin: [
+            `http://127.0.0.1:3000`,
+            `http://localhost:3000`]
+    }
+})
 
 
 function create_user(socket_id, name){
@@ -29,10 +38,13 @@ users = {
 
 
 io.on('connection', (socket) => {
+
+    console.log(socket.id)
+
     console.log('New client connected');
 
-    socket.on('login', (user)=>{
-
+    socket.on('Login', (user)=>{
+        console.log(user)
     })
 
     socket.on('ready', ()=>{
@@ -45,6 +57,10 @@ io.on('connection', (socket) => {
     });
 });
 
-server.listen(4000, () => {
-    console.log('Server is running on port 4000');
-});
+// server.listen(4000, () => {
+//     console.log('Server is running on port 4000');
+// });
+
+http.listen(4000, ()=>{
+    console.log('Server is working')
+})
