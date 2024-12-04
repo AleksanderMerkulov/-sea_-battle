@@ -45,6 +45,9 @@ io.on('connection', (socket) => {
 
     socket.on('Login', (user)=>{
         console.log(user)
+
+        socket.emit('login response', {})
+
     })
 
     socket.on('ready', ()=>{

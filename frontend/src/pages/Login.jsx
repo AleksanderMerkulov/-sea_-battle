@@ -4,11 +4,23 @@ import {useSocket} from "../context/SocketContext";
 function Login(props) {
 
     const [username, setUsername] = useState('')
-    const {sendMessage} = useSocket()
+    const [isSuccessLogin, setIsSuccessLogin] = useState('')
+    const {sendMessage, setCurrentPage, waitMessage} = useSocket(false)
+
+    function handleLogin(){
+        setIsSuccessLogin(true)
+        setCurrentPage('set_ships')
+        alert('success')
+    }
 
     function handleSubmit(e){
         e.preventDefault()
-        sendMessage('Login', {name:username})
+        try{
+            sendMessage('Login', {name:username})
+            waitMessage('login response', handleLogin)
+        }catch (e) {
+            alert('Ошибка авторизации')
+        }
     }
 
     return (

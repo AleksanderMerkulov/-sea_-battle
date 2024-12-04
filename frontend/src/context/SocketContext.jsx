@@ -7,13 +7,11 @@ const socket = socketIO('http://localhost:4000');
 
 export const SocketProvider = ({ children }) => {
     const [connected, setConnected] = useState(false);
-    const [socketObj, setSocketObj] = useState({})
-
+    const [currentPage, setCurrentPage] = useState('login')
 
 
     useEffect(() => {
 
-        setSocketObj(socket)
 
         socket.on('connect', () => {
             setConnected(true);
@@ -31,8 +29,12 @@ export const SocketProvider = ({ children }) => {
         socket.emit(message, body)
     }
 
+    function waitMessage(type='', handler){
+        return socket.on(type, handler)
+    }
+
     return (
-        <SocketContext.Provider value={{ socket, connected, sendMessage }}>
+        <SocketContext.Provider value={{ socket, connected, sendMessage, waitMessage, currentPage, setCurrentPage }}>
             {children}
         </SocketContext.Provider>
     );
