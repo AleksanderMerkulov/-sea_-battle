@@ -10,7 +10,7 @@ function App() {
     if (currentPage === 'login') return <Login/>
     if (currentPage === 'home') return <Login/>
     if (currentPage === 'set_ships') return <SetShips/>
-
+    if (currentPage === 'game') return <></>
 }
 
 export default App;
