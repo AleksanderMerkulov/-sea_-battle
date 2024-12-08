@@ -51,8 +51,10 @@ io.on('connection', (socket) => {
     })
 
     //получение статуса готовности от игрока и проверка готовности второго
-    socket.on('Ready', ()=>{
+    socket.on('Ready', (gameCard)=>{
         users[socket.id].game_status = true
+        users[socket.id].game_card = gameCard
+
         console.log(users)
 
         // Проверяем количество готовых игроков

@@ -167,6 +167,7 @@ const SetShips = () => {
     // Функция отправки готовности на сервер
     function handleReady(){
         setWaiting(true)
+        console.dir(gameCard)
         sendMessage('Ready', gameCard)
         waitMessage('OpponentIsReady', handleWaitMessage)
     }
