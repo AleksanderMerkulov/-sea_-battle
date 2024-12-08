@@ -160,6 +160,7 @@ const SetShips = () => {
     // Функция ожидания ответа от сервера, что соперник готов
     function handleWaitMessage() {
         // setWaiting(false)
+        alert('Opponent is ready! Lets was')
         setCurrentPage('game')
     }
 

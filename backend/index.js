@@ -31,10 +31,7 @@ function create_user(socket_id, name){
     }
 }
 
-users = {
-    0: create_user()
-
-}
+users = {}
 
 
 io.on('connection', (socket) => {
@@ -44,18 +41,34 @@ io.on('connection', (socket) => {
     console.log('New client connected');
 
     socket.on('Login', (user)=>{
-        console.log(user)
+
+        users[socket.id] = create_user(socket.id ,user.name)
+
+        console.log(users)
 
         socket.emit('login response', {})
 
     })
 
-    socket.on('ready', ()=>{
+    //получение статуса готовности от игрока и проверка готовности второго
+    socket.on('Ready', ()=>{
+        users[socket.id].game_status = true
+        console.log(users)
 
-        socket.emit('rival_ready')
-    })
+        // Проверяем количество готовых игроков
+        const readyPlayers = Object.values(users).filter(user => user.game_status).length;
+
+        if (readyPlayers === 2) {
+            console.log('Оба противника готовы!');
+            io.emit('OpponentIsReady', {});
+
+        } else {
+            console.log(`Игрок ${socket.id} готов. Всего готовых игроков: ${readyPlayers}`);
+        }
+    });
 
     socket.on('disconnect', () => {
+        delete users[socket.id]
         console.log('Client disconnected');
     });
 });
