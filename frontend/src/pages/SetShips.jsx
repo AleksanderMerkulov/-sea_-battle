@@ -3,7 +3,7 @@ import './SetShips.css';
 import {useSocket} from "../context/SocketContext"; // Импортируем стили для игрового поля
 
 const SetShips = () => {
-    const {sendMessage, waitMessage, setCurrentPage} = useSocket()
+    const {sendMessage, waitMessage, setCurrentPage, setGameCardContext} = useSocket()
     const [gameCard, setGameCard] = useState({
         4: [],
         3: [],
@@ -160,6 +160,7 @@ const SetShips = () => {
     // Функция ожидания ответа от сервера, что соперник готов
     function handleWaitMessage() {
         // setWaiting(false)
+        setGameCardContext(gameCard)
         alert('Opponent is ready! Lets was')
         setCurrentPage('game')
     }

@@ -27,11 +27,31 @@ function create_user(socket_id, name){
             3: [],
             2: [],
             1: [],
-        }
+        },
+        opponent_socket_id: null,
     }
 }
 
 users = {}
+
+function checkHit(x, y, gameCard) {
+    // Перебираем все корабли
+    for (const length in gameCard) {
+        for (const ship of gameCard[length]) {
+            // Проверяем попадание в горизонтальный или вертикальный корабль
+            const isHit =
+                (ship.start.x === ship.end.x && ship.start.x === x && y >= ship.start.y && y <= ship.end.y) || // Вертикальный
+                (ship.start.y === ship.end.y && ship.start.y === y && x >= ship.start.x && x <= ship.end.x);   // Горизонтальный
+
+            if (isHit) {
+                return true
+            }
+        }
+    }
+
+    // Если выстрел мимо
+    return false;
+}
 
 
 io.on('connection', (socket) => {
@@ -67,6 +87,16 @@ io.on('connection', (socket) => {
         } else {
             console.log(`Игрок ${socket.id} готов. Всего готовых игроков: ${readyPlayers}`);
         }
+    });
+
+    socket.on('shoot', ({ x, y }) => {
+        console.log('Shoot')
+        const opponent_id = Object.keys(users).find(key => key !== String(socket.id));
+        console.log(socket.id, opponent_id)
+        const isHit = checkHit(x, y, users[opponent_id].game_card); // Проверяем попадание
+
+        socket.emit('hit', { x, y, isHit });
+        socket.broadcast.emit('enemyHit', {x, y});
     });
 
     socket.on('disconnect', () => {

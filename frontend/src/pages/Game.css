@@ -1,0 +1,29 @@
+.game {
+    display: flex;
+    justify-content: space-around;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.row {
+    display: flex;
+}
+
+
+.cell.hit {
+    background-color: red;
+    border: 1px solid darkred;
+}
+
+.cell.hit .cell{
+    background: #9a4c4c;
+}
+
+.cell.hit .cell.ship{
+    background: red;
+}
+

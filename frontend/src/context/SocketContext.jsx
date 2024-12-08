@@ -8,7 +8,7 @@ const socket = socketIO('http://localhost:4000');
 export const SocketProvider = ({ children }) => {
     const [connected, setConnected] = useState(false);
     const [currentPage, setCurrentPage] = useState('login')
-
+    const [gameCardContext, setGameCardContext] = useState({})
 
     useEffect(() => {
 
@@ -34,7 +34,7 @@ export const SocketProvider = ({ children }) => {
     }
 
     return (
-        <SocketContext.Provider value={{ socket, connected, sendMessage, waitMessage, currentPage, setCurrentPage }}>
+        <SocketContext.Provider value={{ socket, connected, sendMessage, waitMessage, currentPage, setCurrentPage, setGameCardContext, gameCardContext }}>
             {children}
         </SocketContext.Provider>
     );
