@@ -1,6 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import './Game.css'; // Добавь стили для полей и клеток
 import {useSocket} from "../context/SocketContext";
+import styled from "styled-components";
+
+const Wrapper = styled.div`
+  min-height: 100vh;
+  width: 100%;
+  height: 100%;
+  background: url('/29119091_Comic.jpg') no-repeat;
+  background-size: cover;
+`
+
+const Container = styled.section`
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.9);
+
+`
+
+const Title = styled.h3`
+  font-size: 24px;
+`
+
+const WaitOpponent = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
+const WaitMessage = styled.div`
+  padding: 20px;
+  font-size: 32px;
+  color: white;
+  background: #9a4c4c;
+  
+`
 
 function areAllShipsSunk(gameCard, fieldHits) {
     // Перебираем все корабли в gameCard
@@ -23,11 +60,10 @@ function areAllShipsSunk(gameCard, fieldHits) {
     return true;
 }
 
-
-
 const Game = () => {
     const [myFieldHits, setMyFieldHits] = useState([]); // Удары по моему полю
     const [enemyFieldHits, setEnemyFieldHits] = useState([]); // Удары по полю соперника
+    const [isMyStep, setIsMyStep] = useState(true); // Удары по полю соперника
 
     const {gameCardContext, sendMessage, waitMessage} = useSocket()
 
@@ -56,6 +92,9 @@ const Game = () => {
 
     }, []);
 
+    useEffect(()=>{
+        setIsMyStep(true)
+    }, [myFieldHits])
 
     // Отображение содержимого клетки
     const renderCellContent = (x, y, fieldHits, isMyField) => {
@@ -129,20 +168,28 @@ const Game = () => {
     const handleCellClick = (x, y) => {
         sendMessage('shoot', {x, y});
         console.log('shoot', {x,y})// Отправка координат на сервер
+        setIsMyStep(false)
     };
 
 
     return (
-        <div className="game">
-            <div className="field">
-                <h3>Моё поле</h3>
-                {renderGrid(myFieldHits, true)}
-            </div>
-            <div className="field">
-                <h3>Поле соперника</h3>
-                {renderGrid(enemyFieldHits, false)}
-            </div>
-        </div>
+        <Wrapper>
+            {isMyStep? null :
+                <WaitOpponent>
+                    <WaitMessage>Ожидайте хода противника</WaitMessage>
+                </WaitOpponent>
+            }
+            <Container className="game">
+                <div className="field">
+                    <Title>Моё поле</Title>
+                    {renderGrid(myFieldHits, true)}
+                </div>
+                <div className="field">
+                    <Title>Поле соперника</Title>
+                    {renderGrid(enemyFieldHits, false)}
+                </div>
+            </Container>
+        </Wrapper>
     );
 };
 

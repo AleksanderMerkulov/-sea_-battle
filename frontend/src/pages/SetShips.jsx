@@ -1,6 +1,58 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import './SetShips.css';
-import {useSocket} from "../context/SocketContext"; // Импортируем стили для игрового поля
+import {useSocket} from "../context/SocketContext";
+import styled from "styled-components"; // Импортируем стили для игрового поля
+
+const Wrapper = styled.div`
+  min-height: 100vh;
+  width: 100%;
+  height: 100%;
+  background: url('/29119091_Comic.jpg') no-repeat;
+  background-size: cover;
+`
+
+const Container = styled.section`
+  width: 50%;
+  margin: 0 auto;
+
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.7);
+
+`
+
+const Button = styled.button`
+  font-size: 24px;
+  width: 50%;
+  background: white;
+  font-weight: bold;
+  
+`
+
+const Title = styled.h1`
+  color: #282c34;
+  font-size: 36px;
+`
+
+const ControlContainer = styled.div`
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+`
+
+const ControlButton = styled.button`
+  border: 3px solid #282c34;
+  border-radius: 4px;
+  background: white;
+
+  &.active {
+    background: #4caf50;
+    border-color: #0f7013;
+  }
+  
+  &.switcher{
+    background: #a4d0a7;
+  }
+`
 
 const SetShips = () => {
     const {sendMessage, waitMessage, setCurrentPage, setGameCardContext} = useSocket()
@@ -28,7 +80,7 @@ const SetShips = () => {
         if (isPlacementValid(length, start, end)) {
             setGameCard((prev) => ({
                 ...prev,
-                [length]: [...prev[length], { start, end }],
+                [length]: [...prev[length], {start, end}],
             }));
             setIsPlacing(false);
             setSelectedShipLength(null);
@@ -102,13 +154,12 @@ const SetShips = () => {
     };
 
 
-
     const handleCellClick = (x, y) => {
         if (isPlacing && selectedShipLength) {
-            const start = { x, y };
+            const start = {x, y};
             const end = isVertical
-                ? { x, y: y + selectedShipLength - 1 } // Вертикальное размещение
-                : { x: x + selectedShipLength - 1, y }; // Горизонтальное размещение
+                ? {x, y: y + selectedShipLength - 1} // Вертикальное размещение
+                : {x: x + selectedShipLength - 1, y}; // Горизонтальное размещение
             handlePlaceShip(selectedShipLength, start, end);
         }
     };
@@ -166,7 +217,7 @@ const SetShips = () => {
     }
 
     // Функция отправки готовности на сервер
-    function handleReady(){
+    function handleReady() {
         setWaiting(true)
         console.dir(gameCard)
         sendMessage('Ready', gameCard)
@@ -174,48 +225,50 @@ const SetShips = () => {
     }
 
     return (
-        <div>
-            {!waiting ? <>
-                    <h2>Set Your Ships</h2>
-                    <div>
-                        <h3>Available Ships</h3>
-                        <button className={activeBtn === 4 ? 'active' : ''} onClick={() => {
-                            setActiveBtn(4)
-                            handleShipSelect(4);
-                        }}>Place 4-length Ship
-                        </button>
-                        <button className={activeBtn === 3 ? 'active' : ''} onClick={() => {
-                            setActiveBtn(3)
-                            handleShipSelect(3);
-                        }}>Place 3-length Ship
-                        </button>
-                        <button className={activeBtn === 2 ? 'active' : ''} onClick={() => {
-                            setActiveBtn(2)
-                            handleShipSelect(2);
-                        }}>Place 2-length Ship
-                        </button>
-                        <button className={activeBtn === 1 ? 'active' : ''} onClick={() => {
-                            setActiveBtn(1)
-                            handleShipSelect(1);
-                        }}>Place 1-length Ship
-                        </button>
-                        <button onClick={toggleDirection}>
-                            {isVertical ? 'Switch to Horizontal' : 'Switch to Vertical'}
-                        </button>
-                    </div>
-                </>
-                :
-                <h1>Ожидание соперника</h1>}
-            <div className="grid">
-                {renderGrid()}
-            </div>
-            <div>
+        <Wrapper>
+            <Container>
+                {!waiting ? <>
+                        <Title>Расставь свои корабли</Title>
+                        <ControlContainer>
+                            <ControlButton className={activeBtn === 4 ? 'active' : ''} onClick={() => {
+                                setActiveBtn(4)
+                                handleShipSelect(4);
+                            }}>Четырёхпалубный корабль
+                            </ControlButton>
+                            <ControlButton className={activeBtn === 3 ? 'active' : ''} onClick={() => {
+                                setActiveBtn(3)
+                                handleShipSelect(3);
+                            }}>Трёхпалубный корабль
+                            </ControlButton>
+                            <ControlButton className={activeBtn === 2 ? 'active' : ''} onClick={() => {
+                                setActiveBtn(2)
+                                handleShipSelect(2);
+                            }}>Двухпалубный корабль
+                            </ControlButton>
+                            <ControlButton className={activeBtn === 1 ? 'active' : ''} onClick={() => {
+                                setActiveBtn(1)
+                                handleShipSelect(1);
+                            }}>Однопалубный корабль
+                            </ControlButton>
+                            <ControlButton onClick={toggleDirection} className={'switcher'}>
+                                {isVertical ? 'Поставить горизонтально' : 'Поставить вертикально'}
+                                {isVertical ? <span>&rarr;</span> : <span>&darr;</span>}
+                            </ControlButton>
+                        </ControlContainer>
+                    </>
+                    :
+                    <h1>Ожидание соперника</h1>}
+                <div className="grid">
+                    {renderGrid()}
+                </div>
+                <div>
 
-                {(gameCard[1].length + gameCard[2].length + gameCard[3].length + gameCard[4].length === 10 && !waiting) ?
-                    <button className={'ready'} onClick={handleReady}>I'm ready</button> : null
-                }
-            </div>
-        </div>
+                    {(gameCard[1].length + gameCard[2].length + gameCard[3].length + gameCard[4].length === 10 && !waiting) ?
+                        <Button className={'ready'} onClick={handleReady}>I'm ready</Button> : null
+                    }
+                </div>
+            </Container>
+        </Wrapper>
     );
 };
 
